@@ -1,24 +1,92 @@
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
-from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
+import time
+import asyncio
+import httpx
+import os
+from astrbot.api.event import filter, AstrMessageEvent
+from astrbot.api.message_components import Plain
+from astrbot.api.star import register, Star, Context, StarTools
 
-@register("helloworld", "YourName", "一个简单的 Hello World 插件", "1.0.0")
-class MyPlugin(Star):
-    def __init__(self, context: Context):
+@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.0", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
+class DownloadMusicPlugin(Star):
+    def __init__(self, context: Context, config: dict):
         super().__init__(context)
+        self.token = config.get('token', '')
+        self.cookie = config.get('cookie', '')
+        self._lock = asyncio.Lock()
+        self._last_req = 0.0
+        self._client = httpx.AsyncClient(
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko"},
+            timeout=10.0
+        )
+        self.data_dir = StarTools.get_data_dir("astrbot_plugin_download_music")
+        os.makedirs(self.data_dir, exist_ok=True)
 
-    async def initialize(self):
-        """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
-    
-    # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
-    @filter.command("helloworld")
-    async def helloworld(self, event: AstrMessageEvent):
-        """这是一个 hello world 指令""" # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
-        user_name = event.get_sender_name()
-        message_str = event.message_str # 用户发的纯文本消息字符串
-        message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
-        logger.info(message_chain)
-        yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
+    async def api_request(self, url: str, params: dict) -> dict:
+        async with self._lock:
+            wait = 1.0 - (time.time() - self._last_req)
+            if wait > 0:
+                await asyncio.sleep(wait)
+            resp = await self._client.get(url, params=params)
+            resp.raise_for_status()
+            self._last_req = time.time()
+            return resp.json()
 
-    async def terminate(self):
-        """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
+    @filter.command("下载音乐")
+    async def download_music(self, event: AstrMessageEvent, music_name: str):
+        # 使用事件对象构造消息链
+        def build_chain(content):
+            return event.chain_result([Plain(content)])
+
+        if not self.token:
+            await self.context.send_message(
+                session=event.session,
+                message_chain=build_chain("❌ 未配置音乐API Token")
+            )
+            return
+
+        try:
+            song_id = await self._get_musicid(music_name)
+            if not song_id:
+                await self.context.send_message(
+                    session=event.session,
+                    message_chain=build_chain(f"❌ 未找到歌曲「{music_name}」")
+                )
+                return
+
+            url = await self._get_music_url(song_id)
+            if not url:
+                await self.context.send_message(
+                    session=event.session,
+                    message_chain=build_chain("❌ 获取下载链接失败")
+                )
+                return
+
+            await self.context.send_message(
+                session=event.session,
+                message_chain=event.chain_result([
+                    Plain(f"✅ 歌曲「{music_name}」下载链接："),
+                    Plain(url)
+                ])
+            )
+        except Exception as e:
+            logger.error(f"处理异常: {str(e)}")
+            await self.context.send_message(
+                session=event.session,
+                message_chain=build_chain("❌ 服务暂时不可用")
+            )
+
+    async def _get_musicid(self, keyword: str) -> str | None:
+        params = {"token": self.token, "keyword": keyword, "limit": 1, "type": 1}
+        result = await self.api_request("https://v3.alapi.cn/api/music/search", params)
+        return result.get("data", {}).get("songs", [{}])[0].get("id")
+
+    async def _get_music_url(self, song_id: str) -> str | None:
+        params = {"token": self.token, "id": song_id}
+        if self.cookie:
+            params["cookie"] = self.cookie
+        result = await self.api_request("https://v3.alapi.cn/api/music/url", params)
+        return result.get("data", {}).get("url")
+
+    async def __del__(self):
+        await self._client.aclose()

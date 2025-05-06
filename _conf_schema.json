@@ -1,0 +1,12 @@
+{
+  "token": {
+      "description": "音乐 API 的访问令牌",
+      "type": "string",
+      "obvious_hint": true
+  },
+  "cookie": {
+      "description": "用于获取音乐下载链接的 Cookie",
+      "type": "string",
+      "obvious_hint": true
+  }
+}
