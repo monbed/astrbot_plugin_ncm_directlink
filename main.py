@@ -1,13 +1,13 @@
-from astrbot.api import logger
 import time
 import asyncio
 import httpx
 import os
+from astrbot.api import logger
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.message_components import Plain
 from astrbot.api.star import register, Star, Context, StarTools
 
-@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.0", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
+@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.1", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
 class DownloadMusicPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
