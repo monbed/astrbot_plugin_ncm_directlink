@@ -5,6 +5,7 @@ import os
 from astrbot.api import logger
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.message_components import Plain
+from astrbot.api.star import register, Star, Context, StarTools
 
 @register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.2", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
 class DownloadMusicPlugin(Star):
