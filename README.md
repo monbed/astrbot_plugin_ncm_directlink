@@ -1,6 +1,6 @@
 
 
-获取网易云音乐直链插件AstrBot插件
+## 获取网易云音乐直链的AstrBot插件
 
 需要api：https://www.alapi.cn/  目前为止每天免费100次。
 
