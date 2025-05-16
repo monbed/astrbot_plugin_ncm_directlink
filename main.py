@@ -5,9 +5,8 @@ import os
 from astrbot.api import logger
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.message_components import Plain
-from astrbot.api.star import register, Star, Context, StarTools
 
-@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.1", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
+@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.2", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
 class DownloadMusicPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
@@ -19,8 +18,6 @@ class DownloadMusicPlugin(Star):
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko"},
             timeout=10.0
         )
-        self.data_dir = StarTools.get_data_dir("astrbot_plugin_download_music")
-        os.makedirs(self.data_dir, exist_ok=True)
 
     async def api_request(self, url: str, params: dict) -> dict:
         async with self._lock:
