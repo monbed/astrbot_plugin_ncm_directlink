@@ -6,6 +6,7 @@
 
 下载会员音乐需要网易云VIP的cookie。
 
+在插件配置填入token和cookie即可使用
 
 ## 指令 ##
 
