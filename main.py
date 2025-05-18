@@ -16,6 +16,7 @@ class DownloadMusicPlugin(Star):
         self._lock = asyncio.Lock()
         self._last_req = 0.0
         self._client = httpx.AsyncClient(
+            verify=False,
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko"},
             timeout=10.0
         )
@@ -31,7 +32,7 @@ class DownloadMusicPlugin(Star):
             return resp.json()
 
     @filter.command("下载音乐")
-    async def download_music(self, event: AstrMessageEvent, plugin_context: Context, music_name: str):
+    async def download_music(self, event: AstrMessageEvent, music_name: str):
         # 使用事件对象构造消息链
         def build_chain(content):
             return event.chain_result([Plain(content)])
