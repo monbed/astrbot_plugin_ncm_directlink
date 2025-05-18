@@ -2,7 +2,6 @@ import time
 import asyncio
 import httpx
 import os
-import certifi
 from astrbot.api import logger
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.message_components import Plain
@@ -19,7 +18,6 @@ class DownloadMusicPlugin(Star):
         self._client = httpx.AsyncClient(
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko"},
             timeout=10.0
-            verify=certifi.where()  # 使用最新 CA 证书库
         )
 
     async def api_request(self, url: str, params: dict) -> dict:
