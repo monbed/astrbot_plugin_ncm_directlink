@@ -32,7 +32,7 @@ class DownloadMusicPlugin(Star):
             return resp.json()
 
     @filter.command("下载音乐")
-    async def download_music(self, event: AstrMessageEvent, music_name: str):
+    async def download_music(self, event: AstrMessageEvent, plugin_context: Context, music_name: str):
         # 使用事件对象构造消息链
         def build_chain(content):
             return event.chain_result([Plain(content)])
