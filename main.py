@@ -16,13 +16,13 @@ except ImportError:
 
 from astrbot.api.star import register, Star, Context
 
-@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.0", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
+@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.0.1", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
 class DownloadMusicPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
         self.token = config.get('token', '')
         self.cookie = config.get('cookie', '')
-        self.limit = config.get('limit', '')  # 新增limit参数，默认5
+        self.limit = config.get('limit', '')
         self._lock = asyncio.Lock()
         self._last_req = 0.0
         self._client = httpx.AsyncClient(
@@ -43,7 +43,10 @@ class DownloadMusicPlugin(Star):
 
     @filter.command("下载音乐")
     async def download_music(self, event: AstrMessageEvent, music_name: str):
-        # 使用事件对象构造消息链
+        # 兼容所有空格和全部文本，直接用 event.message_str 去除指令前缀
+        music_name = event.message_str.strip()
+        if music_name.startswith("下载音乐"):
+            music_name = music_name[len("下载音乐"):].strip()
         def build_chain(content):
             return event.chain_result([Plain(content)])
 
