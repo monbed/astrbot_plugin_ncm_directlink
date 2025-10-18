@@ -65,7 +65,7 @@ class DownloadMusicPlugin(Star):
                 artist = ", ".join([a.get("name", "") for a in song.get("artists", [])])
                 album = song.get("album", {}).get("name", "")
                 msg += f"{i}. {name} - {artist} [{album}]\n"
-            msg += "请回复序号获取直链（30秒内有效）"
+            msg += "请回复序号获取直链（60秒内有效）"
             await self.context.send_message(
                 session=event.session,
                 message_chain=build_chain(msg)
@@ -94,10 +94,10 @@ class DownloadMusicPlugin(Star):
             )
     async def _timeout_reminder(self, session_id):
         try:
-            await asyncio.sleep(30)
+            await asyncio.sleep(60)
             cache = self._search_cache.get(session_id)
             if cache:
-                # 30秒后还在，说明用户未回复，自动提醒
+                # 60秒后还在，说明用户未回复，自动提醒
                 session = cache.get('session')
                 await self.context.send_message(
                     session=session,
@@ -127,8 +127,8 @@ class DownloadMusicPlugin(Star):
         # 只允许触发指令的用户回复序号
         if current_user_id != user_id:
             return
-        # 超时处理，30秒
-        if time.time() - timestamp > 30:
+        # 超时处理，60秒
+        if time.time() - timestamp > 60:
             await self.context.send_message(
                 session=event.session,
                 message_chain=build_chain("❌ 回复超时，请重新发送指令")
