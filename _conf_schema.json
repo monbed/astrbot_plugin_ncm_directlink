@@ -1,0 +1,26 @@
+{
+  "apiurl": {
+    "description": "apiurl",
+    "type": "string",
+    "default": "",
+    "obvious_hint": true
+  },
+  "level": {
+    "description": "音质等级",
+    "type": "string",
+    "default": "jyeffect",
+    "obvious_hint": false
+  },
+  "cookie": {
+    "description": "请求中携带的 Cookie",
+    "type": "string",
+    "default": "",
+    "obvious_hint": false
+  },
+  "limit": {
+    "description": "搜索返回的歌曲数量",
+    "type": "int",
+    "default": 10,
+    "obvious_hint": false
+  }
+}
