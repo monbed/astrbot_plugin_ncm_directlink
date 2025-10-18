@@ -157,7 +157,7 @@ class DownloadMusicPlugin(Star):
 
     async def _get_musicids(self, keyword: str) -> list[dict]:
         search_url = f"{self.apiurl.rstrip('/')}/search"
-        params = {"keywords": keyword, "randomCNIP": "true"}
+        params = {"keywords": keyword}
         if self.limit:
             params['limit'] = self.limit
         params['type'] = 1
@@ -172,8 +172,8 @@ class DownloadMusicPlugin(Star):
         return songs or []
 
     async def _get_music_url(self, song_id: str) -> str | None:
-        enhanced_url = f"{self.apiurl.rstrip('/')}/song/url/v1"
-        params = {"id": song_id, "randomCNIP": "true"}
+        enhanced_url = f"{self.apiurl.rstrip('/')}/song/download/url/v1"
+        params = {"id": song_id}
         if self.level:
             params['level'] = self.level
         if self.cookie:
