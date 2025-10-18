@@ -15,7 +15,7 @@ except ImportError:
 
 from astrbot.api.star import register, Star, Context
 
-@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.2.0", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
+@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.2.1", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
 class DownloadMusicPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
@@ -157,7 +157,7 @@ class DownloadMusicPlugin(Star):
 
     async def _get_musicids(self, keyword: str) -> list[dict]:
         search_url = f"{self.apiurl.rstrip('/')}/search"
-        params = {"keywords": keyword}
+        params = {"keywords": keyword, "randomCNIP": "true"}
         if self.limit:
             params['limit'] = self.limit
         params['type'] = 1
@@ -173,7 +173,7 @@ class DownloadMusicPlugin(Star):
 
     async def _get_music_url(self, song_id: str) -> str | None:
         enhanced_url = f"{self.apiurl.rstrip('/')}/song/url/v1"
-        params = {"id": song_id}
+        params = {"id": song_id, "randomCNIP": "true"}
         if self.level:
             params['level'] = self.level
         if self.cookie:
