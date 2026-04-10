@@ -54,8 +54,8 @@ class DownloadMusicPlugin(Star):
             msg = "搜索结果：\n"
             for i, song in enumerate(songs, 1):
                 name = song.get("name", "未知")
-                artist = ", ".join([a.get("name", "") for a in song.get("artists", [])])
-                album = song.get("album", {}).get("name", "")
+                artist = ", ".join([a.get("name", "") for a in song.get("ar", [])])
+                album = song.get("al", {}).get("name", "")
                 msg += f"{i}. {name} - {artist} [{album}]\n"
             msg += "请回复序号获取直链（60秒内有效）"
             await self.context.send_message(
@@ -134,8 +134,8 @@ class DownloadMusicPlugin(Star):
                 song = songs[idx-1]
                 url = await self._get_music_url(song.get("id"))
                 name = song.get("name", "未知")
-                artist = ", ".join([a.get("name", "") for a in song.get("artists", [])])
-                album = song.get("album", {}).get("name", "")
+                artist = ", ".join([a.get("name", "") for a in song.get("ar", [])])
+                album = song.get("al", {}).get("name", "")
                 if url:
                     msg = f"✅ {name} - {artist} [{album}]\n直链：{url}"
                 else:
@@ -154,13 +154,7 @@ class DownloadMusicPlugin(Star):
             params['limit'] = self.limit
         params['type'] = 1
         result = await self.api_request(search_url, params)
-        songs = None
-        if isinstance(result, dict):
-            songs = (result.get('result') or {}).get('songs') if result.get('result') else None
-            if not songs:
-                songs = result.get('songs')
-            if not songs:
-                songs = (result.get('data') or {}).get('songs')
+        songs = (result.get('result') or {}).get('songs') if isinstance(result, dict) else None
         return songs or []
 
     async def _get_music_url(self, song_id: str) -> str | None:
