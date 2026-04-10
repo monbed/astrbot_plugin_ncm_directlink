@@ -22,5 +22,11 @@
     "type": "int",
     "default": 10,
     "obvious_hint": false
+  },
+  "timeout": {
+    "description": "API 请求超时时间（秒）",
+    "type": "float",
+    "default": 10.0,
+    "obvious_hint": false
   }
 }
