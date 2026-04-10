@@ -7,7 +7,7 @@ from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.message_components import Plain
 from astrbot.api.star import register, Star, Context
 
-@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.2.2", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
+@register("astrbot_plugin_ncm_directlink", "monbed", "获取网易云音乐直链插件", "1.2.3", "https://github.com/monbed/astrbot_plugin_ncm_directlink")
 class DownloadMusicPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
@@ -148,7 +148,7 @@ class DownloadMusicPlugin(Star):
                 del self._search_cache[session_id]
 
     async def _get_musicids(self, keyword: str) -> list[dict]:
-        search_url = f"{self.apiurl.rstrip('/')}/search"
+        search_url = f"{self.apiurl.rstrip('/')}/cloudsearch"
         params = {"keywords": keyword}
         if self.limit:
             params['limit'] = self.limit
