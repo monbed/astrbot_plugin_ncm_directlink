@@ -76,34 +76,34 @@ class DownloadMusicPlugin(Star):
 
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def handle_music_index(self, event: AstrMessageEvent):
-        # 检查当前会话是否过期，给予提示
-        session_id = self._get_session_id(event)
-        cache = self._search_cache.get(session_id)
         now = time.time()
-        if cache and now - cache['timestamp'] > 60:
-            del self._search_cache[session_id]
-            if event.message_str.strip().isdigit():
-                await self._send(event, "❌ 回复超时，请重新发送指令")
-            return
-
-        # 清理其他过期缓存
-        expired = [k for k, v in self._search_cache.items() if now - v['timestamp'] > 60]
+        # 清理非常过期的缓存（例如5分钟以上的），避免刚满60秒的用户的缓存被其他人的消息误删
+        expired = [k for k, v in self._search_cache.items() if now - v['timestamp'] > 300]
         for k in expired:
             del self._search_cache[k]
 
+        session_id = self._get_session_id(event)
+        cache = self._search_cache.get(session_id)
         if not cache:
             return
-
-        songs = cache['songs']
 
         # 只允许触发指令的用户回复序号
         if event.get_sender_id() != cache['user_id']:
             return
 
         text = event.message_str.strip()
+        
+        # 检查当前用户的会话是否过期，给予提示
+        if now - cache['timestamp'] > 60:
+            del self._search_cache[session_id]
+            if text.isdigit():
+                await self._send(event, "❌ 回复超时，请重新发送指令")
+            return
+
         if not text.isdigit():
             return
 
+        songs = cache['songs']
         idx = int(text)
         if not (1 <= idx <= len(songs)):
             return
