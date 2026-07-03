@@ -1,32 +1,33 @@
 {
   "apiurl": {
-    "description": "apiurl",
+    "description": "网易云 API 服务地址 (apiurl)",
     "type": "string",
+    "hint": "自部署的 NeteaseCloudMusicApi 兼容服务地址，如 http://127.0.0.1:3000。留空则插件不可用。",
     "default": "",
     "obvious_hint": true
   },
   "level": {
     "description": "音质等级",
     "type": "string",
-    "default": "jyeffect",
-    "obvious_hint": false
+    "hint": "standard=标准, higher=较高, exhigh=极高, lossless=无损, hires=Hi-Res, jyeffect=高清环绕声, sky=沉浸环绕声, jymaster=超清母带。高音质需要黑胶 VIP cookie。",
+    "options": ["standard", "higher", "exhigh", "lossless", "hires", "jyeffect", "sky", "jymaster"],
+    "default": "jyeffect"
   },
   "cookie": {
     "description": "请求中携带的 Cookie",
     "type": "string",
-    "default": "",
-    "obvious_hint": false
+    "hint": "网易云账号 Cookie（含 MUSIC_U=...）。下载 VIP/高音质歌曲需要，以查询参数传给 API。",
+    "default": ""
   },
   "limit": {
     "description": "搜索返回的歌曲数量",
     "type": "int",
-    "default": 10,
-    "obvious_hint": false
+    "default": 10
   },
   "timeout": {
     "description": "API 请求超时时间（秒）",
     "type": "float",
-    "default": 10.0,
-    "obvious_hint": false
+    "hint": "搜索与取直链接口的超时。音乐文件下载固定 300 秒，不受此项影响。",
+    "default": 10.0
   }
 }

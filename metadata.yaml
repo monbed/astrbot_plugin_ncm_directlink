@@ -1,6 +1,6 @@
 name: astrbot_plugin_ncm_directlink
 display_name: 网易云直链
-desc: 获取网易云音乐直链插件。
-version: v1.2.4
+desc: 搜索网易云音乐，获取直链或直接发送音乐文件（按歌名重命名）。
+version: v1.3.0
 author: monbed
 repo: https://github.com/monbed/astrbot_plugin_ncm_directlink
